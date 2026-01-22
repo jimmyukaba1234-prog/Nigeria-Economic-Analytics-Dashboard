@@ -2,6 +2,7 @@
 # =========================================================
 # DATABASE UPLOAD GATE
 # =========================================================
+import streamlit as st
 
 if "db_path" not in st.session_state:
     st.session_state.db_path = None
@@ -1929,4 +1930,5 @@ with tab_insights:
     - Cost-heavy, import-dependent manufacturing
     - Firms exposed to FX risk without natural hedges
     """)
+
 
