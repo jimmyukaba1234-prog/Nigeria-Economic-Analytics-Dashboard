@@ -1394,44 +1394,7 @@ st.divider()
 # ================================
 # SIDEBAR: DATABASE UPLOAD
 # ================================
-st.sidebar.header("📂 Data Source")
 
-uploaded_db = st.sidebar.file_uploader(
-    "Upload Nigeria Economy SQLite Database (.db)",
-    type=["db", "sqlite", "sqlite3"]
-)
-
-# Session state guards
-if "data_loaded" not in st.session_state:
-    st.session_state.data_loaded = False
-
-if uploaded_db is not None:
-    with st.spinner("🔄 Loading & cleaning database..."):
-
-        # Save uploaded DB to temp path
-        temp_db_path = BASE_DIR / "uploaded_temp.db"
-        with open(temp_db_path, "wb") as f:
-            f.write(uploaded_db.getbuffer())
-
-        # Run ETL pipeline
-        cleaned_data = clean_NEA_dataset(
-            sqlite_db_path=str(temp_db_path),
-            run_tables=("COMPANY_PAT", "CPI", "GDP"),
-            save_to_sqlite=True
-        )
-
-        # Validation
-        if not cleaned_data or any(df.empty for df in cleaned_data.values()):
-            st.sidebar.error("❌ ETL failed or returned empty tables.")
-        else:
-            st.session_state.cleaned_data = cleaned_data
-            st.session_state.data_loaded = True
-            st.sidebar.success("✅ Database cleaned & loaded successfully")
-
-# Stop app if no data
-if not st.session_state.data_loaded:
-    st.info("👈 Upload a Nigeria Economy SQLite database from the sidebar to begin.")
-    st.stop()
 
 # Bring cleaned data into app scope
 cleaned_data = st.session_state.cleaned_data
@@ -1940,6 +1903,7 @@ with tab_insights:
     - Cost-heavy, import-dependent manufacturing
     - Firms exposed to FX risk without natural hedges
     """)
+
 
 
 
