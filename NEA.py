@@ -3,6 +3,16 @@
 # DATABASE UPLOAD GATE
 # =========================================================
 import streamlit as st
+import streamlit as st
+
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+
+import sqlite3
+from pathlib import Path
+import tempfile
 
 if "db_path" not in st.session_state:
     st.session_state.db_path = None
@@ -1930,5 +1940,6 @@ with tab_insights:
     - Cost-heavy, import-dependent manufacturing
     - Firms exposed to FX risk without natural hedges
     """)
+
 
 
