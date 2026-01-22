@@ -1,3 +1,47 @@
+
+# =========================================================
+# DATABASE UPLOAD GATE
+# =========================================================
+
+if "db_path" not in st.session_state:
+    st.session_state.db_path = None
+
+uploaded_db = st.file_uploader(
+    "📂 Upload Nigeria_Economy_Performance.db to continue",
+    type=["db", "sqlite", "sqlite3"]
+)
+
+if uploaded_db is not None and st.session_state.db_path is None:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".db") as tmp_file:
+        tmp_file.write(uploaded_db.read())
+        st.session_state.db_path = Path(tmp_file.name)
+
+    st.success("✅ Database uploaded successfully")
+    st.rerun()
+
+if st.session_state.db_path is None:
+    st.info("Please upload the database file to unlock the dashboard.")
+    st.stop()
+
+DB_PATH = st.session_state.db_path
+
+def validate_database(db_path):
+    required_tables = {"COMPANY_PAT", "CPI", "GDP"}
+
+    with sqlite3.connect(db_path) as conn:
+        tables = {
+            row[0] for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table';")
+        }
+
+    missing = required_tables - tables
+    if missing:
+        st.error(f"❌ Missing required tables: {missing}")
+        st.stop()
+
+validate_database(DB_PATH)
+
+
 """
 Nigeria Macroeconomic Analytics Dashboard
 GDP • CPI • Company PAT Analysis
@@ -72,7 +116,7 @@ pd.set_option("display.max_columns", None)
 # DATABASE CONFIG
 # =========================================================
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "Nigeria_Economy_Performance.db"
+#DB_PATH = BASE_DIR / "Nigeria_Economy_Performance.db"
 
 GDP_TABLE = "GDP_clean"
 CPI_TABLE = "CPI_clean"
@@ -1885,3 +1929,4 @@ with tab_insights:
     - Cost-heavy, import-dependent manufacturing
     - Firms exposed to FX risk without natural hedges
     """)
+
